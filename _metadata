@@ -1,0 +1,10 @@
+optimization-002
+Set Cover
+6
+9y0JgDDn, ./data/sc_157_0,   solver.py, Set Cover Problem 1
+0TxckAgA, ./data/sc_330_0,   solver.py, Set Cover Problem 2
+aMrM2H0R, ./data/sc_1000_11, solver.py, Set Cover Problem 3
+PSIzTTGs, ./data/sc_5000_1,  solver.py, Set Cover Problem 4
+9HvJKg1E, ./data/sc_10000_5, solver.py, Set Cover Problem 5
+YWLK5J7r, ./data/sc_10000_2, solver.py, Set Cover Problem 6
+
