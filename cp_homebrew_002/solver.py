@@ -42,9 +42,6 @@ Set = namedtuple("Set", ['index', 'cost', 'items'])
 Solution = namedtuple("Solution", ['assignment', 'obj'])
 
 def solve_it(input_data):
-    best_solution = None
-    node_count = 0
-    fail_count = 0
     
     # parse the input
     lines = input_data.split('\n')
