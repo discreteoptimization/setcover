@@ -55,11 +55,6 @@ def solve_it(input_data):
         parts = lines[i].split()
         sets.append(Set(i-1, float(parts[0]), map(int, parts[1:])))
     
-    problem = Problem(range(0,item_count), sets)
-    
-    # define the domains of all the variables {0,1}
-    domains = [range(0,2)]*set_count
-    
     
     # Improvement: re-order sets from the order in the file 
     #  to improve the search procudure.
@@ -67,6 +62,9 @@ def solve_it(input_data):
     problem = Problem(range(0,item_count), sets)
     
     solver_data = {'best_solution':None, 'node_count':0, 'fail_count':0}
+    
+    # define the domains of all the variables {0,1}
+    domains = [range(0,2)]*set_count
     
     # start a trivial depth first search for a solution
     tryall([], domains, problem, solver_data)
