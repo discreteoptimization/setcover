@@ -24,18 +24,67 @@
 # THE SOFTWARE.
 
 
-# Pre-requisites:
+# -------------------------------------------------------------------------------------------------- 
+#     ABOUT THE GECODE SOLVER:
+# -------------------------------------------------------------------------------------------------- 
+#
+# ABOUT GECODE
+# 
+# Gecode is one of the most popular open-source CP solvers. It is a C++ library that supports 
+# many global constraints and variable types. Problem models in Gecode are commonly written as 
+# C++ classes that inherit from Gecode's Script class (MinimizeScript or MaximizeScript for 
+# optimization problems). In the class constructor one defines the variables, constraints and 
+# branching strategy. It is also easy to write your own branching strategy. A detailled documentation 
+# of Gecode can be found here: www.gecode.org/doc-latest/MPG.pdf‎. The Gecode C++ file for solving 
+# the set covering problem is given in 'set_cover_gecode.cpp'.
+#
+# ABOUT THIS SOLVER:
+#
+# This solver executes the Gecode executable 'set_cover' that is obtained when compiling the 
+# Gecode C++ file 'set_cover_gecode.cpp'. The compilation instructions are given below. 
+# Gecode's output (the solutions) is then converted into the submission output format.
+#
+# -------------------------------------------------------------------------------------------------- 
+#     HOW TO USE THIS SOLVER:
+# -------------------------------------------------------------------------------------------------- 
 #
 # + Download and install Gecode: http://www.gecode.org/
 #
-# + Make sure that Gecode is in the LD_LIBRARY_PATH path
+# + Make sure that Gecode is in the LD_LIBRARY_PATH path.
 #   To achieve that, enter the following into your shell (or add it to your ~/.bashrc or equivalent):
 #       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your/path/to/gecode/
 #
-# + compile the C++ Gecode file 'set_cover.cpp' into the executable 'set_cover' 
+# + Compile the Gecode C++ file 'set_cover_gecode.cpp' into the executable 'set_cover'. 
 #   For instance, enter the following into a shell (see the script 'compile_gecode.sh'):
-#       g++ -I /path/to/gecode/ -c set_cover.cpp
-#       g++ -o set_cover -L /path/to/gecode/ set_cover.o -lgecodesearch -lgecodeminimodel -lgecodeint -lgecodekernel -lgecodesupport -lgecodegist -lgecodedriver
+#       g++ -I /path/to/gecode/ -c set_cover_gecode.cpp
+#       g++ -o set_cover -L /path/to/gecode/ set_cover_gecode.o -lgecodesearch -lgecodeminimodel \
+#            -lgecodeint -lgecodekernel -lgecodesupport -lgecodegist -lgecodedriver
+#
+# + Execute the solver just like the standard solver. For instance:
+#   python solver_gecode.py data/sc_6_1
+#
+# + If you want to play around with the solver:
+#   + You can change the maximum number of solutions that Gecode will search for in 
+#     this script (search for 'nb_solutions')
+#   + You can change the branching strategy (that is currently very naive) in the Gecode 
+#     C++ file (search for 'branch' and have a look at chapter 8 in Gecode's documentation:
+#     www.gecode.org/doc-latest/MPG.pdf‎)
+#   + Gecode has an internal tool called 'gist', to visualize and iterate over the search tree.
+#     This way you can easily evaluate the performance of your search heuristic. To use this 
+#     tool, make sure to have compiled Gecode with gist, and replace the parts in this script
+#     that evoke the Gecode file 'set_cover' with the alternative call (search for 'ALTERNATIVELY'
+#     in this file). 
+#      
+# + for more Gecode examples, check out the examples/ directory of your Gecode installation 
+#
+# -------------------------------------------------------------------------------------------------- 
+#     GETTING HELP
+# -------------------------------------------------------------------------------------------------- 
+#
+# + If you need any help, have a look at the Discussion forum of the course and post your questions. 
+#   Make sure that nobody has asked your question already.
+#
+# -------------------------------------------------------------------------------------------------- 
 
 import os
 from subprocess import Popen, PIPE
@@ -66,6 +115,13 @@ def solve_it(input_data):
     # solve using the Gecode executable 'set_cover'
     process = Popen(['./set_cover', 'data.txt', str(nb_solutions)], 
                     stdout=PIPE, stderr=PIPE)
+    # ALTERNATIVELY: run Gecode with the search visualization tool 'gist' to browse 
+    #                the search tree. This will open a window where clicking on 
+    #                'Search'->'all solutions' will display the whole search tree.
+    #                You will need to have compiled Gecode with gist on, however. 
+    #process = Popen(['./set_cover', '-mode gist','data.txt', str(nb_solutions)], 
+    #                stdout=PIPE, stderr=PIPE)
+
     (stdout, stderr) = process.communicate()
 
     # comment the following line if you do not want to see Gecode's output

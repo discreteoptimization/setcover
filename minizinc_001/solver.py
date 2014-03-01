@@ -24,11 +24,60 @@
 # THE SOFTWARE.
 
 
-# Pre-requisites:
+# -------------------------------------------------------------------------------
+#     ABOUT THE MINIZINC SOLVER:
+# -------------------------------------------------------------------------------
 #
+# ABOUT MINIZINC:
+#
+# Minizinc is a highlevel modelling language in which it is easy to formulate
+# problems. A problem formulation consists of a problem model (.mzn file) 
+# and a data file (.dzn file). Given a problem and a data file, the Minizinc tool
+# can translate the problem into a MIP model or CP model and forwards it to a 
+# solver. This is very convenient for the user, since she/he does not have to deal
+# with the solver input format.
+#
+# ABOUT THIS SOLVER:
+# 
+# The problem model for the set covering problem can be found in the file 
+# 'setCovering.mzn'. This script automatically generates the Minizinc data file 
+# for a given problem instance, and writes it into the file 'data.dzn'. The two
+# files are then forwarded to a MIP solver (CBC from COIN-OR) and solved. The 
+# solver output is read and converted into the submission output format.
+#
+# -------------------------------------------------------------------------------
+#    HOW TO USE THIS SOLVER:
+# -------------------------------------------------------------------------------
+# 
 # + Download and install Minizinc: http://www.minizinc.org/
-# + Make sure that the Minizinc binaries are part of your PATH
-# + If you want to use mzn-gecode, install Gecode: http://www.gecode.org
+#
+# + Make sure that the Minizinc binaries are part of your PATH. 
+#   To achieve that, enter the following into your shell (or add it to your 
+#   ~/.bashrc or equivalent):
+#       export PATH=$PATH:/your/path/to/minizinc/bin/
+# 
+# + Execute the solver just like the standard solver. For instance:
+#   python solver_minizinc.py data/sc_25_0
+#
+# + If you want to play around with the solver: 
+#   + You can change the maximum number of solutions that the solver will search 
+#     for in this script (search for 'nb_solutions').
+#   + There are different kinds of solvers that you can use for solving 
+#     the problem: a MIP solver and 3 different CP solvers. To play around with 
+#     them, uncomment the right lines for invoking the Minizinc process (search 
+#     for 'ALTERNATIVE' is this file).
+#
+# + There are many other Minizinc examples in the /examples directory of your
+#   Minizinc installation.
+# 
+# -------------------------------------------------------------------------------
+#    GETTING HELP
+# -------------------------------------------------------------------------------
+#
+# + If you need any help, have a look at the Discussion forum of the course and
+#   post your questions. Make sure that nobody has asked your question already!
+#
+# -------------------------------------------------------------------------------
 
 import os
 from subprocess import Popen, PIPE
@@ -53,12 +102,22 @@ def solve_it(input_data):
     data_file = "data.dzn"
     generateMinizincDataFile(item_count, set_count, sets, data_file)
 
-    # solve with Minizinc's MIP solver
-    process = Popen(['mzn-g12mip', 'setCovering.mzn', 'data.dzn'],
+    # specify here how many solutions the solver should maximally search for ('0' means all)
+    nb_solutions = 10
+
+    # solve with Minizinc's MIP solver (CBC of COIN-OR)
+    process = Popen(['mzn-g12mip', '-n', str(nb_solutions),'setCovering.mzn', 'data.dzn'],
                     stdout=PIPE, stderr=PIPE)
-    # alternatively solve with Minizinc's CP solver, Gecode
-    #process = Popen(['mzn-gecode', 'setCovering.mzn', 'data.dzn'],
+    # ALTERNATIVE_1: solve with Minizinc's CP solver
+    # process = Popen(['mzn-g12fd', '-n', str(nb_solutions),'setCovering.mzn', 'data.dzn'],
     #                stdout=PIPE, stderr=PIPE)
+    # ALTERNATIVE_2: solve with Minizinc's CP solver that uses learning via lazy clause generation
+    # process = Popen(['mzn-g12lazy', '-n', str(nb_solutions),'setCovering.mzn', 'data.dzn'],
+    #                stdout=PIPE, stderr=PIPE)
+    # ALTERNATIVE_3: solve with CP solver Gecode (however, Gecode must be installed to do that!)
+    # process = Popen(['mzn-gecode', '-n', str(nb_solutions),'setCovering.mzn', 'data.dzn'],
+    #                stdout=PIPE, stderr=PIPE)
+
     (stdout, stderr) = process.communicate()
 
     # print error messages if there are any 
