@@ -1,3 +1,46 @@
+INSTANCE SOURCES
+
+1. Wedelin instances
+
+Obtained from: 
+   http://www.co.cm.is.nagoya-u.ac.jp/~yagiura/scp/wedelin/
+Instances originate from paper:
+   A. Caprara , M. Fischetti and P. Toth, 
+   A heuristic method for the set covering problem, 
+   Operations Research, 47 (1999) 730-743.
+Instance extension: *.wedelin.do.txt
+See also: 
+   http://www.co.cm.is.nagoya-u.ac.jp/~yagiura/scp/
+
+
+2. Balas and Carrera Instances
+
+Obtained from: 
+   http://www.co.cm.is.nagoya-u.ac.jp/~yagiura/scp/balas/ 
+Instances originate from paper:
+   A. Caprara , M. Fischetti and P. Toth,
+   A heuristic method for the set covering problem, 
+   Operations Research, 47 (1999) 730-743.
+Instance extension: *.balas.do.txt
+See also: 
+   http://www.co.cm.is.nagoya-u.ac.jp/~yagiura/scp/
+IMPORTANT NOTE:
+   The instances did not completely conform to the format specification
+   that was given with them. There were too many sets listed than specified
+   in the header.
+   I have therefore ignored the additional number of given sets (since there
+   were not even any weights specified for them). 
+
+
+3. OR-Library by J E Beasley (recommended by Serdar)
+
+Obtained from:
+   http://people.brunel.ac.uk/~mastjjb/jeb/orlib/files/
+Instance extension: *.orlib.do.txt
+See also:
+   http://people.brunel.ac.uk/~mastjjb/jeb/orlib/scpinfo.html  
+
+
 The instances have been renamed as follows. The original name
 indicates the instance set it was retrieved from (balas, wedelin 
 or OR library) and the original instance name is the prefix.
