@@ -50,10 +50,11 @@ def large_neighborhood(model):
         g_model.remove(constraint)
 
       print("Next solution:    {0}".format(g_model.objval))
-      m.write(model)
+      m.write(model, False)
 
   m.solve(model, TIMELIMIT, False)
   print("Optimal solution: {0}".format(g_model.objval))
+  m.write(model)
 
 if __name__ == "__main__":
   large_neighborhood(m.create_model(m.read(sys.argv[1])))

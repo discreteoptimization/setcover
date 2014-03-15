@@ -91,12 +91,11 @@ def solve(model, timelimit=float('inf'), first=True):
   g_model.optimize()
 
 
-def write(model):
+def write(model, original=True):
   """Write the solution of a set cover instance to a file."""
   g_model, vars = model
   with open(g_model.getAttr("ModelName") + ".sol", "w") as file:
-    file.write("{0} {1}\n".format(
-        g_model.objval, int(g_model.status == grb.GRB.status.OPTIMAL)))
+    file.write("{0} {1}\n".format(g_model.objval, int(original and g_model.status == grb.GRB.status.OPTIMAL)))
     for var in vars:
       file.write("{0} ".format(int(var.x)))
     file.write("\n")
