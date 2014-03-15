@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-# Simple MIP model for the set cover problem.
-# This is very hacky and does not contain any error checking.
-#
-# Note that I usually just call the solver interactively, experiment
-# around and then manually submit the solution. Thus, there is no
-# automatic submit script.
+"""Simple MIP model for the set cover problem.
+
+This solution is very hacky and does not contain any error checking.
+
+Note that I usually just call the solver interactively, experiment
+around and then manually submit the solution. Thus, there is no
+automatic submit script."""
 
 import sys
 import os.path
@@ -16,9 +17,9 @@ def read(filename):
   """Read a set cover instance.
 
   Output:
-  A pair of the number of items n and the list of subsets
-  of N := {0, ..., n-1}. Each subset U is a pair of the subset
-  cost and the list of elements in U.
+  A triple consisting of the instance name, the number of items n
+  and the list of subsets of N := {0, ..., n-1}. Each subset U
+  is a pair of the subset cost and the list of elements in U.
   """
   with open(filename) as file:
     nitems, nsets = (int(x) for x in file.readline().split())
@@ -26,7 +27,7 @@ def read(filename):
     for i in range(nsets):
       line = file.readline().split()
       sets.append((float(line[0]), [int(x) for x in line[1:]]))
-    return nitems, sets
+    return os.path.basename(filename), nitems, sets
 
 
 def create_model(instance):
@@ -41,16 +42,15 @@ def create_model(instance):
   function is simply the sum over the c_i * s_i. The constraints
   are that each item is captured by at least set that is taken.
   """
-  nitems, sets = instance
-  model = grb.Model()
+  name, nitems, sets = instance
+  model = grb.Model(name)
 
   # One variable for each set, also remember which sets cover each item
   covered_by = [[] for i in range(nitems)]
   vars = []
   for i, set in enumerate(sets):
     cost, covers = set
-    vars.append(model.addVar(obj=cost, vtype=grb.GRB.BINARY,
-                name="s_{0}".format(i)))
+    vars.append(model.addVar(obj=cost, vtype=grb.GRB.BINARY, name="s_{0}".format(i)))
 
     for item in covers:
       covered_by[item].append(vars[i])
@@ -67,25 +67,34 @@ def create_model(instance):
   return model, vars
 
 
-def solve(model):
-  """Solve a set cover MIP model.
+def solve(model, timelimit=float('inf'), first=True):
+  """Solve a set cover MIP instance.
 
   Basically just calls the Gurobi solver with some
   nice parameters.
   """
+  g_model = model[0]
 
-  # If you are out of memory this may be useful:
-  # grb.setParam("Threads", 1)
-  # grb.setParam("NodefileStart", 4.0)
+  # Only set parameters on first call -> avoids massive console output
+  if first:
+    # Tuning parameters derived from sc_330_0
+    g_model.read("mip.prm")
 
-  model[0].optimize()
+    grb.setParam("Threads", 3)
+    grb.setParam("MIPGap", 0.001)  # 0.1% suffices
+    grb.setParam("TimeLimit", timelimit)
+
+    # If you are out of memory this may be useful:
+    # grb.setParam("Threads", 1)
+    # grb.setParam("NodefileStart", 4.0)
+
+  g_model.optimize()
 
 
-def write(model, filename):
-  """Write the solution of a set cover problem to a file."""
-  with open(filename, "w") as file:
-    g_model, vars = model
-
+def write(model):
+  """Write the solution of a set cover instance to a file."""
+  g_model, vars = model
+  with open(g_model.getAttr("ModelName") + ".sol", "w") as file:
     file.write("{0} {1}\n".format(
         g_model.objval, int(g_model.status == grb.GRB.status.OPTIMAL)))
     for var in vars:
@@ -96,4 +105,4 @@ if __name__ == "__main__":
   instance = read(sys.argv[1])
   model = create_model(instance)
   solve(model)
-  write(model, os.path.basename(sys.argv[1]) + ".sol")
+  write(model)
