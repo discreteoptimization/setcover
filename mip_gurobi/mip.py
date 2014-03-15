@@ -80,13 +80,13 @@ def solve(model, timelimit=float('inf'), first=True):
     # Tuning parameters derived from sc_330_0
     g_model.read("mip.prm")
 
-    grb.setParam("Threads", 3)
-    grb.setParam("MIPGap", 0.001)  # 0.1% suffices
-    grb.setParam("TimeLimit", timelimit)
+    g_model.setParam("Threads", 3)
+    g_model.setParam("MIPGap", 0.001)  # 0.1% suffices
+    g_model.setParam("TimeLimit", timelimit)
 
     # If you are out of memory this may be useful:
-    # grb.setParam("Threads", 1)
-    # grb.setParam("NodefileStart", 4.0)
+    # g_model.setParam("Threads", 1)
+    # g_model.setParam("NodefileStart", 4.0)
 
   g_model.optimize()
 
