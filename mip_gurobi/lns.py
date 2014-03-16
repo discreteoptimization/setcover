@@ -1,7 +1,9 @@
-"""Large neighborhood search for set cover based on an MIP solver.
+"""
+Large neighborhood search for set cover based on a MIP solver.
 
-My approach is to improve the solution by keeping a fixed ratio of
-the variables constant"""
+My approach is to improve the solution by excluding a fixed ratio of
+the currently unused sets.
+"""
 
 import random
 import sys
@@ -9,51 +11,55 @@ import gurobipy as grb
 import mip as m
 
 # Time limit per MIP call in s
-TIMELIMIT = 1.0 * 60
-# Ratio of unused nodes to fix
+TIMELIMIT = 5.0 * 60
+# Ratio of unused nodes to exclude
 FIX_RATIO = 0.5
 
 
 def large_neighborhood(model):
-  """Solves a set cover instance with large-neighborhood
-  search.
+  """
+  Solves a set cover instance with large-neighborhood search.
 
   In each call to the MIP solver we exclude a fixed ratio of the sets that
-  are currently unused. (Is this sensible? Should I favor excluding
-  more costly sets?)
+  are currently unused. (Maybe I should favor excluding
+  the sets with the highest cost/size ratio?)
+
+  Args:
+    model: The set cover MIP model as created by mip.create_model().
   """
   g_model, vars = model
-
-  # Do not pollute stdout
   g_model.setParam("OutputFlag", 0)
+  g_model.setParam("TimeLimit", TIMELIMIT)
 
   print("Processing " + g_model.getAttr("ModelName"))
 
   # Warmup
-  m.solve(model, TIMELIMIT)
+  g_model.optimize()
   print("Initial solution: {0}".format(g_model.objval))
   m.write(model)
 
   if g_model.status != grb.GRB.OPTIMAL:
     while g_model.status != grb.GRB.INTERRUPTED:
-      # Add new constraints as described above
+      # Add the additional constraints as described above
       added_constraints = []
       for var in vars:
         if int(var.x) == 0 and random.random() < FIX_RATIO:
           added_constraints.append(g_model.addConstr(var == 0))
 
       # Next iteration
-      m.solve(model, TIMELIMIT, False)
+      g_model.optimize()
 
-      # Remove old constraints
+      # Remove the additional constraints again
       for constraint in added_constraints:
         g_model.remove(constraint)
 
       print("Next solution:    {0}".format(g_model.objval))
       m.write(model, False)
 
-  m.solve(model, TIMELIMIT, False)
-  print("Optimal solution: {0}".format(g_model.objval))
+  g_model.setParam("TimeLimit", float('inf'))
+  g_model.optimize()
+  if g_model.status == grb.GRB.OPTIMAL:
+    print("Optimal solution: {0}".format(g_model.objval))
   m.write(model)
 
 if __name__ == "__main__":
