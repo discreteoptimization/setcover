@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 """
-Simple MIP model for the set cover problem.
-Very hacky and completely without error checking.
+Simple MIP model for the set cover problem. Very hacky and completely
+without error checking. This simple approach does not suffice for the
+larger instances. See lns.py for a large neighborhood search based on this
+model that is significantly faster.
 
 Note that I usually just call the solver interactively, experiment
 around and then manually submit the solution. Thus, there is no
@@ -29,7 +31,7 @@ def read(filename):
   with open(filename) as file:
     nitems, nsets = (int(x) for x in file.readline().split())
     sets = []
-    for i in range(nsets):
+    for _ in range(nsets):
       line = file.readline().split()
       sets.append((float(line[0]), [int(x) for x in line[1:]]))
     return os.path.basename(filename), nitems, sets

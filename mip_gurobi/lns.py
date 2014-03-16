@@ -1,8 +1,10 @@
 """
 Large neighborhood search for set cover based on a MIP solver.
 
-My approach is to improve the solution by excluding a fixed ratio of
-the currently unused sets.
+The approach is to improve the solution by fixing some ratio of the currently
+taken nodes. I took the idea from https://github.com/ricbit/setcover.
+On my computer this yields solutions that suffice for getting a 10
+in under 15 minutes.
 """
 
 import random
@@ -11,9 +13,9 @@ import gurobipy as grb
 import mip as m
 
 # Time limit per MIP call in s
-TIMELIMIT = 5.0 * 60
+TIMELIMIT = 2.5 * 60
 # Ratio of unused nodes to exclude
-FIX_RATIO = 0.5
+FIX_RATIO = 0.6
 
 
 def large_neighborhood(model):
