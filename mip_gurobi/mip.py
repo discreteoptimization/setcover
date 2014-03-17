@@ -25,7 +25,7 @@ def read(filename):
 
   Returns:
     A triple consisting of the instance name, the number of items n
-    and the list of subsets of N := {0, ..., n-1}. Each subset U
+    and the list of subsets of N := {0, ..., n - 1}. Each subset U
     is a pair of the subset cost and the list of elements in U.
   """
   with open(filename) as file:
@@ -70,7 +70,7 @@ def create_model(instance):
   for item in range(nitems):
     model.addConstr(grb.quicksum(covered_by[item]) >= 1)
 
-  # We want to minimize. Coefficient fixed during variable creation.
+  # We want to minimize. Objective coefficients already fixed during variable creation.
   model.setAttr("ModelSense", grb.GRB.MINIMIZE)
 
   # Tuning parameters derived from sc_330_0
@@ -78,10 +78,6 @@ def create_model(instance):
 
   model.setParam("Threads", 3)
   model.setParam("MIPGap", 0.001)  # 0.1% usually suffices
-
-  # If you are out of memory this may be useful:
-  # g_model.setParam("Threads", 1)
-  # g_model.setParam("NodefileStart", 4.0)
 
   return model, vars
 

@@ -1,8 +1,8 @@
 """
 Large neighborhood search for set cover based on a MIP solver.
 
-The approach is to improve the solution by fixing some ratio of the currently
-taken nodes. I took the idea from https://github.com/ricbit/setcover.
+The approach is to improve the solution by fixing a ratio of the currently
+unused nodes. I took the idea from https://github.com/ricbit/setcover.
 On my computer this yields solutions that suffice for getting a 10
 in under 15 minutes.
 """
@@ -48,7 +48,6 @@ def large_neighborhood(model):
         if int(var.x) == 0 and random.random() < FIX_RATIO:
           added_constraints.append(g_model.addConstr(var == 0))
 
-      # Next iteration
       g_model.optimize()
 
       # Remove the additional constraints again
