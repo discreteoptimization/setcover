@@ -1,0 +1,4 @@
+# Create setcover.nl file
+model setcover.model;
+data setcover.data;
+write gsetcover;

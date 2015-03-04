@@ -1,0 +1,37 @@
+/* Set Cover Problem */
+
+/* Written by Lyr1k <Lyr1k.2008@gmail.com> */
+
+/* number of items */
+param n, integer, >= 2;
+/* number of sets */
+param m, integer, >= 2;
+
+set N := {1..n};
+set M := {1..m};
+
+/* set of edges */
+set E within M cross N;
+
+/* build adjacency matrix */
+param adj{i in M, j in N} :=
+(
+    if ((i,j) in E) then
+        1
+    else
+        0
+);
+
+/* w[i] is the cost of open set i */
+param w{i in M}, >= 0;
+
+/* x[i] = 1 means that set i is opened */
+var x{i in M}, binary;
+
+/* each item from set N must be served at least one set */
+s.t. cov{j in N}: sum{i in M} adj[i,j] * x[i] >= 1;
+
+/* we need to minimize the sum of node weights over M */
+minimize z: sum{i in M} w[i] * x[i];
+
+end;

@@ -1,0 +1,7 @@
+model setcover.model;
+data setcover.data;
+solution setcover.sol;
+printf "===========\n";
+printf "%g\n", z;
+printf{i in M} "%d ", x[i];
+printf "\n";
