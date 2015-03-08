@@ -1,5 +1,3 @@
 .DS_Store
 *.pyc
 
-/solver_my.py
-/submit_my.py
