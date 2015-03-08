@@ -54,7 +54,7 @@ def large_neighborhood(model):
       # Add the additional constraints as described above
       added_constraints = []
       for var in vars:
-        if random.random() < FIX_RATIO:
+        if best_sol[var] == 0 and random.random() < FIX_RATIO:
           added_constraints.append(g_model.addConstr(var == best_sol[var]))
 
       g_model.optimize()
