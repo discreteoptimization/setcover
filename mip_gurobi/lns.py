@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 """
 Large neighborhood search for set cover based on a MIP solver.
 
@@ -32,6 +35,7 @@ def large_neighborhood(model):
   g_model, vars = model
   g_model.setParam("OutputFlag", 0)
   g_model.setParam("TimeLimit", TIMELIMIT)
+  g_model.setParam("SolutionLimit", 1)
 
   print("Processing " + g_model.getAttr("ModelName"))
 
@@ -39,13 +43,18 @@ def large_neighborhood(model):
   g_model.optimize()
   print("Initial solution: {0}".format(g_model.objval))
   m.write(model)
-
+  g_model.setParam("SolutionLimit", 2147483647)
+  
+  best_obj = g_model.objval
+  best_sol = {var:int(var.x) for var in vars}
+  obj_constraint = g_model.addConstr(g_model.getObjective() <= best_obj - 1)
+  
   if g_model.status != grb.GRB.OPTIMAL:
     while g_model.status != grb.GRB.INTERRUPTED:
       # Add the additional constraints as described above
       added_constraints = []
       for var in vars:
-        if int(var.x) == 0 and random.random() < FIX_RATIO:
+        if best_sol[var] == 0 and random.random() < FIX_RATIO:
           added_constraints.append(g_model.addConstr(var == 0))
 
       g_model.optimize()
@@ -54,8 +63,23 @@ def large_neighborhood(model):
       for constraint in added_constraints:
         g_model.remove(constraint)
 
-      print("Next solution:    {0}".format(g_model.objval))
-      m.write(model, False)
+      #print g_model.status
+      if g_model.status != grb.GRB.INFEASIBLE:
+        if g_model.objval < best_obj:
+          print("\nNext solution:    {0}".format(g_model.objval))
+          m.write(model, False)
+
+          best_obj = g_model.objval
+          best_sol = {var:int(var.x) for var in vars}
+
+          g_model.remove(obj_constraint)
+          obj_constraint = g_model.addConstr(g_model.getObjective() <= best_obj - 1)
+        else:
+          print "(ERROR)"
+      else:
+        sys.stdout.write('.')
+        sys.stdout.flush()
+
 
   g_model.setParam("TimeLimit", float('inf'))
   g_model.optimize()
