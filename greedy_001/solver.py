@@ -46,13 +46,13 @@ def solve_it(input_data):
     # build a trivial solution
     # pick add sets one-by-one until all the items are covered
     solution = [0]*set_count
-    coverted = set()
+    covered = set()
     
     sorted_sets = sorted(sets, key=lambda s: s.cost/len(s.items) if len(s.items) > 0 else s.cost)
     for s in sorted_sets:
         solution[s.index] = 1
-        coverted |= set(s.items)
-        if len(coverted) >= item_count:
+        covered |= set(s.items)
+        if len(covered) >= item_count:
             break
         
     # calculate the cost of the solution
