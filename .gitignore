@@ -1,3 +1,14 @@
 .DS_Store
 *.pyc
-
+*.exe
+*.log
+*.out
+*.s
+*.o
+*.gcc
+*.profile
+*.profiler
+time_sandbox.c
+directory_access_sandbox.c
+greedy_003/sandbox/*
+greedy_003/data
